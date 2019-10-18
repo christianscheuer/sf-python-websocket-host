@@ -399,7 +399,6 @@ def try_decode_UTF8(data):
 
 ####### SoundFlow connection websocket handler        
 
-from websocket_server import WebsocketServer
 import json
 import sys, traceback
 
