@@ -63,8 +63,9 @@ class API():
             print "Now running websocket server...\n"
             self.server.run_forever()
 
-    def run_in_thread(self):
+    def run_in_thread(self, as_daemon):
         self.thread = API.HandlerThread(self)
+        self.thread.Daemon = as_daemon
         self.thread.start()
         return self.thread
 
@@ -488,10 +489,10 @@ class WebsocketHandler:
 	def wait_until_keyboard_interrupt(self):
 		self.server.wait_until_keyboardinterrupt()
 
-	def start(self, port):
+	def start(self, port, as_daemon = True):
 		self.server = WebsocketServer(port)
 		self.server.set_fn_new_client(self.__new_client)
 		self.server.set_fn_client_left(self.__client_left)
 		self.server.set_fn_message_received(self.__message_received)
-		self.server.run_in_thread()	
+		self.server.run_in_thread(as_daemon = as_daemon)	
 

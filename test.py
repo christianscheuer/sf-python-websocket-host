@@ -19,8 +19,8 @@ class MyWebsocketHandler(WebsocketHandler):
 def test():
 	handler = MyWebsocketHandler()
 
-	# 15001 is the port to run on
-	handler.start(15001)
+	# 15001 is the port to run the websocket server on
+	handler.start(port = 15001)
 
 	# This only needs to be run when being run from command line
 	handler.wait_until_keyboard_interrupt()
