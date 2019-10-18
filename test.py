@@ -7,7 +7,8 @@ class MyWebsocketHandler(WebsocketHandler):
 		self._add_handler("/example2", self.on_example2)
 
 	def on_example1(self, args):
-		# Do something, then return a result
+		# args is a dict with unicode keys and values (it's been converted from JSON)
+		# Do something, then return a result dict (if you want)
 		return {
 			"argument_back": ("You said %s" % args[u"value"])
 		}
