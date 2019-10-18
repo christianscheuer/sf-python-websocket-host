@@ -121,7 +121,7 @@ class API():
 
 class WebsocketServer(ThreadingMixIn, TCPServer, API):
     """
-	A websocket server waiting for clients to connect.
+    A websocket server waiting for clients to connect.
     Args:
         port(int): Port to bind to
         host(str): Hostname or IP to listen for connections. By default 127.0.0.1
@@ -416,94 +416,93 @@ def byteify(input):
         return input
 
 class WebsocketHandler:
-	def __init__(self):
-		self.__handlers = {}
-		self._setup_handlers()
+    def __init__(self):
+        self.__handlers = {}
+        self._setup_handlers()
 
-	# Called for every client connecting (after handshake)
-	def __new_client(self, client, server):
-		print("New client connected and was given id %d" % client['id'])
-		#server.send_message_to_all("Hey all, a new client has joined us")
+    # Called for every client connecting (after handshake)
+    def __new_client(self, client, server):
+        print("New client connected and was given id %d" % client['id'])
+        #server.send_message_to_all("Hey all, a new client has joined us")
 
-	# Called for every client disconnecting.
-	def __client_left(self, client, server):
-		print("Client(%d) disconnected" % client['id'])
+    # Called for every client disconnecting.
+    def __client_left(self, client, server):
+        print("Client(%d) disconnected" % client['id'])
 
-	def __send_result(self, rqid, client, result):
-		messageText = json.dumps({
-			"rsid": rqid,
-			"success": True,
-			"result": result
-		})
-		self.server.send_message(client, messageText)
+    def __send_result(self, rqid, client, result):
+        messageText = json.dumps({
+            "rsid": rqid,
+            "success": True,
+            "result": result
+        })
+        self.server.send_message(client, messageText)
 
-	def __send_error(self, rqid, client, error_code, error_text):
-		messageText = json.dumps({
-			"rsid": rqid,
-			"success": False,
-			"error": {
-				"code": error_code,
-				"text": error_text,
-			}
-		})
-		self.server.send_message(client, messageText)
+    def __send_error(self, rqid, client, error_code, error_text):
+        messageText = json.dumps({
+            "rsid": rqid,
+            "success": False,
+            "error": {
+                "code": error_code,
+                "text": error_text,
+            }
+        })
+        self.server.send_message(client, messageText)
 
-	# Called when a client sends a raw message request. Process the request
-	def __message_received(self, client, server, message):
-		
-		# First parse the JSON message
-		try:
-			#print("Client(%d) said: %s" % (client['id'], message))
-			msg = byteify(json.loads(message))
-			msg_request_id = msg['rqid']
-			msg_name = msg['name']
-			msg_args = msg['args']
-			print ("Request ID %s, Name %s, Args %s" % (msg_request_id, msg_name, msg_args))
-		except Exception as e:
-			print ("Error in parsing message: %s" % (e))
-			traceback.print_exc(file=sys.stdout)
+    # Called when a client sends a raw message request. Process the request
+    def __message_received(self, client, server, message):
+        
+        # First parse the JSON message
+        try:
+            #print("Client(%d) said: %s" % (client['id'], message))
+            msg = byteify(json.loads(message))
+            msg_request_id = msg['rqid']
+            msg_name = msg['name']
+            msg_args = msg['args']
+            print ("Request ID %s, Name %s, Args %s" % (msg_request_id, msg_name, msg_args))
+        except Exception as e:
+            print ("Error in parsing message: %s" % (e))
+            traceback.print_exc(file=sys.stdout)
 
-		# Now handle the message
-		try:
-			result = self.__handle_message(client, server, msg_request_id, msg_name, msg_args)
+        # Now handle the message
+        try:
+            result = self.__handle_message(client, server, msg_request_id, msg_name, msg_args)
 
-			# Successfully handled the message
-			# Send the result to the client
-			self.__send_result(msg_request_id, client, result)
+            # Successfully handled the message
+            # Send the result to the client
+            self.__send_result(msg_request_id, client, result)
 
-		except WebsocketError as e:
+        except WebsocketError as e:
             # This was an error with a known error code
-			# Let the client know about the error
-			self.__send_error(msg_request_id, client, e.error_code, e.message)
+            # Let the client know about the error
+            self.__send_error(msg_request_id, client, e.error_code, e.message)
 
-		except Exception as e:
-			# Let the client know about the error
-			self.__send_error(msg_request_id, client, -100, e.message)
+        except Exception as e:
+            # Let the client know about the error
+            self.__send_error(msg_request_id, client, -100, e.message)
 
-			# Print a stack trace to stdout
-			print ("Error in handling message: %s" % (e))
-			traceback.print_exc(file=sys.stdout)
+            # Print a stack trace to stdout
+            print ("Error in handling message: %s" % (e))
+            traceback.print_exc(file=sys.stdout)
 
-	def __handle_message(self, client, server, msg_request_id, msg_name, msg_args):
-		if not msg_name in self.__handlers:
-			raise Exception("Unknown message: %s" % (msg_name))
-		
-		handler_func = self.__handlers[msg_name]
-		return handler_func(msg_args)
+    def __handle_message(self, client, server, msg_request_id, msg_name, msg_args):
+        if not msg_name in self.__handlers:
+            raise Exception("Unknown message: %s" % (msg_name))
+        
+        handler_func = self.__handlers[msg_name]
+        return handler_func(msg_args)
 
-	def _setup_handlers(self):
-		pass
+    def _setup_handlers(self):
+        pass
 
-	def _add_handler(self, name, handler):
-		self.__handlers[name] = handler
+    def _add_handler(self, name, handler):
+        self.__handlers[name] = handler
 
-	def wait_until_keyboard_interrupt(self):
-		self.server.wait_until_keyboardinterrupt()
+    def wait_until_keyboard_interrupt(self):
+        self.server.wait_until_keyboardinterrupt()
 
-	def start(self, port, as_daemon = True):
-		self.server = WebsocketServer(port)
-		self.server.set_fn_new_client(self.__new_client)
-		self.server.set_fn_client_left(self.__client_left)
-		self.server.set_fn_message_received(self.__message_received)
-		self.server.run_in_thread(as_daemon = as_daemon)	
-
+    def start(self, port, as_daemon = True):
+        self.server = WebsocketServer(port)
+        self.server.set_fn_new_client(self.__new_client)
+        self.server.set_fn_client_left(self.__client_left)
+        self.server.set_fn_message_received(self.__message_received)
+        self.server.run_in_thread(as_daemon = as_daemon)	
