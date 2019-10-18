@@ -402,6 +402,13 @@ def try_decode_UTF8(data):
 import json
 import sys, traceback
 
+class WebsocketError(Exception):
+    def __init__(self, error_code, message):
+        self.error_code = error_code
+        self.message = message
+    def __str__(self):
+        return "%d: %s" % (self.code, self.message)
+
 def byteify(input):
     if isinstance(input, dict):
         return { byteify(key): (byteify(value) if key == "name" else value) for key, value in input.iteritems()}
@@ -463,6 +470,11 @@ class WebsocketHandler:
 			# Successfully handled the message
 			# Send the result to the client
 			self.__send_result(msg_request_id, client, result)
+
+		except WebsocketError as e:
+            # This was an error with a known error code
+			# Let the client know about the error
+			self.__send_error(msg_request_id, client, e.error_code, e.message)
 
 		except Exception as e:
 			# Let the client know about the error

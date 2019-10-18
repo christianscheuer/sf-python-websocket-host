@@ -1,4 +1,4 @@
-from websocket_server import WebsocketHandler
+from websocket_server import WebsocketHandler, WebsocketError
 
 class MyWebsocketHandler(WebsocketHandler):
 	def _setup_handlers(self):
@@ -15,8 +15,8 @@ class MyWebsocketHandler(WebsocketHandler):
 		}
 
 	def on_example2(self, args):
-		# This example always raises an Exception
-		raise Exception("We don't like this...")
+		# This example always raises a WebsocketError with a specific error code
+		raise WebsocketError(1200, "We don't like this...")
 
 	def on_example3(self, args):
 		# This one just doesn't care about returning a result
