@@ -5,6 +5,7 @@ class MyWebsocketHandler(WebsocketHandler):
 		# In this method, add handlers for each of the types of messages that we support
 		self._add_handler("/example1", self.on_example1)
 		self._add_handler("/example2", self.on_example2)
+		self._add_handler("/example3", self.on_example3)
 
 	def on_example1(self, args):
 		# args is a dict with unicode keys and values (it's been converted from JSON)
@@ -16,6 +17,11 @@ class MyWebsocketHandler(WebsocketHandler):
 	def on_example2(self, args):
 		# This example always raises an Exception
 		raise Exception("We don't like this...")
+
+	def on_example3(self, args):
+		# This one just doesn't care about returning a result
+		# It just executes an action basically
+		pass
 
 def test():
 	handler = MyWebsocketHandler()

@@ -56,6 +56,20 @@
       input.value = "";
       input.focus();
     }
+    function onSubmit3() {
+      var input = document.getElementById("input");
+      // You can send message to the Web Socket using ws.send.
+      ws.send(JSON.stringify({
+          rqid: ++idCounter,
+          name: '/example3',
+          args: {
+              value: input.value,
+          }
+        }));
+      output("send: " + input.value);
+      input.value = "";
+      input.focus();
+    }
     
     function onCloseClick() {
       ws.close();
@@ -74,6 +88,7 @@
     <input type="text" id="input">
     <input type="button" value="Send example1" onclick="onSubmit1(); return false;">
     <input type="button" value="Send example2" onclick="onSubmit2(); return false;">
+    <input type="button" value="Send example3" onclick="onSubmit3(); return false;">
     <button onclick="onCloseClick(); return false;">close</button>
   </form>
   <div id="log"></div>
