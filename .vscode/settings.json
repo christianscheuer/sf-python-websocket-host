@@ -1,0 +1,16 @@
+{
+    "python.pythonPath": "/Volumes/Intern_HDD1/d2/pywebsock/bin/python2.7",
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.factorypath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/*.pyc": true,
+        "bin/": true,
+        "etc/": true,
+        "include/": true,
+        "lib/": true,
+        "share/": true
+    },
+    "git.ignoreLimitWarning": true
+}
